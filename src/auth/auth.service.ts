@@ -6,10 +6,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt'
 import { User } from 'src/common/interfaces/user.interface';
 import { sendResponse } from 'src/common/response';
+import * as jwt from 'jsonwebtoken'
 @Injectable()
 export class AuthService {
     constructor(private dataBaseService:DataBaseService,
-        private jwtService:JwtService
     ){}
 
     async signUp(signUpInput:SignUpDto) {
@@ -53,11 +53,11 @@ export class AuthService {
     }
 
     async createToken(payload:any) {
-     return  this.jwtService.sign(payload)
+     return  jwt.sign(payload,process.env.JWT_SECRET,{expiresIn:'2h'})
     }
 
     async verifyToken(token:string) {
-      return await this.jwtService.verify(token)
+      return await jwt.verify(token,process.env.JWT_SECRET)
     }
 
     async hashinpPassword(password:string) {
