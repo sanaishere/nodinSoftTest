@@ -17,15 +17,22 @@ export class AuthService {
         let rows=await this.dataBaseService.runQuery('SELECT * FROM user WHERE email=? OR username=? OR phoneNumber=?'
         ,[signUpInput.email,signUpInput.userName,signUpInput.phoneNumber])
         console.log(rows)
-        const result=rows[0] as User[]
-        if(result.length>0) {
+        const existingUser=rows[0] as User[]
+        if(existingUser.length>0) {
           throw new HttpException('there is user existed with some or all of this informations',HttpStatus.BAD_REQUEST)
         }
        const hashedPassword=await this.hashinpPassword(signUpInput.password)
-      const user=await this.dataBaseService.runQuery('INSERT INTO user (email,username, phoneNumber, password) VALUES(?,?,?,?)',
+       await this.dataBaseService.runQuery('INSERT INTO user (email,username, phoneNumber, password) VALUES(?,?,?,?)',
             [signUpInput.email,signUpInput.userName,signUpInput.phoneNumber,hashedPassword]
         )
-        return 'user is created'
+        const result=await this.dataBaseService.runQuery('SELECT * FROM user WHERE username=?',
+          [signUpInput.userName]
+        )
+        const user=result[0] as User[]
+        console.log(user)
+        const token=await this.createToken({userId:user[0].id,role:user[0].role})
+        return {message:'user is created'
+          ,token}
 
       }catch(error){
         throw new HttpException(error,error.status||HttpStatus.INTERNAL_SERVER_ERROR)
