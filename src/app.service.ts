@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { DataBaseService } from './common/DataBaseService';
 
 @Injectable()
 export class AppService {
