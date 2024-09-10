@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, OnModuleInit } from "@nestjs/com
 import { Connection, createConnection } from "mysql2/promise";
 import { config } from "./config";
 import { taskTableQuery, userTableQuery } from "./db";
-
+import mysql from 'mysql2/promise';
 @Injectable()
 export class DataBaseService implements OnModuleInit{
     private connection: Connection; 
@@ -25,9 +25,9 @@ export class DataBaseService implements OnModuleInit{
 
     async runQuery(query:string,params:unknown[]) {
         if(params===null){
-            return await this.connection.query(query)
+            return await this.connection.execute(query)
         }else{
-         return await this.connection.query(query,params)
+         return await this.connection.execute(query,params)
         }
     }
 }
