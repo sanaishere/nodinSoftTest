@@ -8,21 +8,22 @@ export class SignUpDto{
     userName:string
 
     @Matches(/^(?=.*[a-z])(?=.*[A-Z]).+$/, {
-        message: 'Password must contain both uppercase and lowercase letters',
-      })
-    @MinLength(8,{message:'password length should be greater than 8 '})
-    @IsNotEmpty()
-    @IsString()
+      message: 'Password must contain both uppercase and lowercase letters',
+    })
+   @MinLength(8,{message:'password length should be greater than 8 '})
+   @IsString()
+   @IsNotEmpty()
     password:string
 
-    @IsNotEmpty()
+    @IsEmail({message:'email should not be empty'})
     @IsString()
-    @IsEmail()
+    @IsNotEmpty()
     email:string
 
-   @phoneNumberValidator()
+    
     @Length(13)
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty({message:'enter phoneNumber'})
+    @phoneNumberValidator()
     phoneNumber:string
 }

@@ -1,10 +1,9 @@
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import { Observable } from "rxjs";
 
 @Injectable()
 export class AdminGuard implements CanActivate {
-    constructor(private jwtService:JwtService){}
+    constructor(){}
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
             let req=context.switchToHttp().getRequest()
             let role:String=req.user.role

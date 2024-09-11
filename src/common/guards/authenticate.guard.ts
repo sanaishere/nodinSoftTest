@@ -1,10 +1,12 @@
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { AuthService } from "../../auth/auth.service"
+import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate{
-    constructor( private authService:AuthService
+    constructor( private authService:AuthService,
+        private userService:UserService
     ){}
    async canActivate(context: ExecutionContext){
         let payload:string;
@@ -19,8 +21,8 @@ export class AuthGuard implements CanActivate{
        
       
         try{
-        const payload=this.authService.verifyToken(accessToken)
-        const user=await this.authService.findById(payload['userId'])
+        const payload=await this.authService.verifyToken(accessToken)
+        const user=await this.userService.findById(payload['userId'])
         req.user=user
         console.log("user ",req.user)
          

@@ -75,20 +75,5 @@ export class AuthService {
         return await bcrypt.compare(password,hashedPassword)
     }
 
-    async findById(id:number) {
-        try{
-        const rows=await this.dataBaseService.runQuery('SELECT * FROM user WHERE id=?',
-         [id]
-        )
-        console.log(rows)
-        const result=rows[0] as User[]
-        console.log(result)
-        if(result.length===0) {
-         throw new HttpException('user with this id is not Found',HttpStatus.NOT_FOUND)
-        }
-        return result[0]
-        }catch(error){
-            throw new HttpException(error,error.status||HttpStatus.INTERNAL_SERVER_ERROR)
-        }
-    }
+  
 }

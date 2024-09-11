@@ -8,7 +8,11 @@ export function phoneNumberValidator(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-       const phoneNumber=args.object['phoneNumber']
+       const phoneNumber=args?.object['phoneNumber']
+       if (phoneNumber=== undefined || phoneNumber === null || phoneNumber === '') {
+        return true; 
+    }
+       console.log(phoneNumber)
        if(phoneNumber.startsWith('098')){
         return true;
        }

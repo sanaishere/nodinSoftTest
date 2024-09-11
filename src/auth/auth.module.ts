@@ -9,6 +9,7 @@ require('dotenv').config()
   imports:[],
   providers: [AuthService,DataBaseService,
   ],
-  controllers: [AuthController]
+  controllers: [AuthController],
+  exports:[AuthService]
 })
 export class AuthModule {}
