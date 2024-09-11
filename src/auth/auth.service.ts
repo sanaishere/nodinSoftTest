@@ -4,20 +4,19 @@ import { SignUpDto } from './dto/signUp.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt'
-import { User } from 'src/common/interfaces/user.interface';
+import { IUser } from 'src/common/interfaces/user.interface';
 import { sendResponse } from 'src/common/response';
 import * as jwt from 'jsonwebtoken'
 @Injectable()
 export class AuthService {
     constructor(private dataBaseService:DataBaseService,
     ){}
-
     async signUp(signUpInput:SignUpDto) {
       try{
         let rows=await this.dataBaseService.runQuery('SELECT * FROM user WHERE email=? OR username=? OR phoneNumber=?'
         ,[signUpInput.email,signUpInput.userName,signUpInput.phoneNumber])
         console.log(rows)
-        const existingUser=rows[0] as User[]
+        const existingUser=rows[0] as IUser[]
         if(existingUser.length>0) {
           throw new HttpException('there is user existed with some or all of this informations',HttpStatus.BAD_REQUEST)
         }
@@ -28,7 +27,7 @@ export class AuthService {
         const result=await this.dataBaseService.runQuery('SELECT * FROM user WHERE username=?',
           [signUpInput.userName]
         )
-        const user=result[0] as User[]
+        const user=result[0] as IUser[]
         console.log(user)
         const token=await this.createToken({userId:user[0].id,role:user[0].role})
         return {message:'user is created'
@@ -44,7 +43,7 @@ export class AuthService {
         [loginInput.userName]
       )
       console.log(rows)
-      const result=rows[0] as User[]
+      const result=rows[0] as IUser[]
       console.log(result)
       if(result.length===0) {
         throw new HttpException('user is not Found',HttpStatus.NOT_FOUND)

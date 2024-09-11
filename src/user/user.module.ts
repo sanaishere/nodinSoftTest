@@ -10,6 +10,7 @@ import { AuthModule } from 'src/auth/auth.module';
   ,AuthModule
   ],
   controllers: [UserController],
-  providers: [UserService,DataBaseService]
+  providers: [UserService,DataBaseService],
+  exports:[UserService]
 })
 export class UserModule {}
