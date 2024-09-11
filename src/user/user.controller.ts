@@ -10,6 +10,7 @@ import { diskStorage } from 'multer';
 import { fileName, imageFileFilter } from 'src/common/utils';
 import { responseInterceptor } from 'src/common/interceptors/response.interceptor';
 import { QueryDto } from 'src/common/dto/query.dto';
+
 @Controller('user')
 @UseInterceptors(new responseInterceptor())
 export class UserController {
@@ -29,6 +30,11 @@ export class UserController {
     @Get('image/:imgpath')
     seeImage(@Param('imgpath') image, @Res() res) {
      return res.sendFile(image, { root: './files' });
+   }
+   
+   @Get('downloadImage/:imgpath')
+    downloadImage(@Param('imgpath') image, @Res() res) {
+     return res.download(image, { root: './files' })
    }
 
    @UseGuards(AuthGuard)

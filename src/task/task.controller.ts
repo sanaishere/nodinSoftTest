@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards ,Request, Body, UseInterceptors, UploadedFile, HttpException, HttpStatus, Patch, Param, Get, Delete, Query} from '@nestjs/common';
+import { Controller, Post, UseGuards ,Request, Body, UseInterceptors, UploadedFile, HttpException, HttpStatus, Patch, Param, Get, Delete, Query, Res} from '@nestjs/common';
 import { TaskService } from './task.service';
 import { AuthGuard } from 'src/common/guards/authenticate.guard';
 import { CreateTaskDto } from './dto/create.dto';
@@ -14,7 +14,6 @@ import { QueryDto } from '../common/dto/query.dto';
 @UseInterceptors(new responseInterceptor())
 export class TaskController {
     constructor(private taskService:TaskService) {}
-    //@UseInterceptors(taskInterceptor)
     @UseInterceptors(FileInterceptor('file',{
         storage: diskStorage({
           destination: './files', 
@@ -42,7 +41,6 @@ export class TaskController {
       return await this.taskService.getOneTask(id,user)
     }
 
-
     @UseInterceptors(FileInterceptor('file',{
         storage: diskStorage({
           destination: './files', 
@@ -61,6 +59,16 @@ export class TaskController {
     async delete(@Param('id') id:number ,@Request() {user}) {
       return await this.taskService.delete(id,user)
     }
+
+    @Get('file/:imgpath')
+    seeImage(@Param('imgpath') image, @Res() res) {
+     return res.sendFile(image, { root: './files' });
+   }
+
+   @Get('downloadFile/:imgpath')
+    downloadImage(@Param('imgpath') image, @Res() res) {
+     return res.download(image, { root: './files' })
+   }
 
     
 }
