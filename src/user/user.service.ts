@@ -6,6 +6,8 @@ import { sendResponse } from 'src/common/response';
 import { ChangeInformationDto } from './dto/changeInformation';
 import { AssignRoleDto } from './dto/assignRole.dto';
 import { Base_Url } from 'src/common/url';
+import { QueryDto } from 'src/common/dto/query.dto';
+import { pagination } from 'src/common/pagination';
 
 @Injectable()
 export class UserService {
@@ -33,10 +35,29 @@ export class UserService {
     }
    }
 
-   async getAllUsers() {
-    // const queryResult= await this.dataBaseService.runQuery('SELECT * FROM user')
-    // const users=queryResult[0] 
-    // return users
+   async getAllUsers(apiQuery:QueryDto) {
+    let page=apiQuery.page?apiQuery.page:1
+      let limit=apiQuery.limit?apiQuery.limit:5
+      let conditionsQuery=''
+      let values=[]
+      if(apiQuery.text) {
+        conditionsQuery=` WHERE email LIKE ? OR username LIKE ? OR phoneNumber LIKE ? OR role LIKE ?`
+        values.push(`${apiQuery.text}%`,`${apiQuery.text}%`,
+        `${apiQuery.text}%`,`${apiQuery.text}%`)
+      }
+
+      let query=`SELECT * FROM user ${conditionsQuery}`
+      if(apiQuery.sortBy) {
+        let orderBy=apiQuery.orderBy?apiQuery.orderBy:''
+        query += ` ORDER BY ${apiQuery.sortBy} ${orderBy}`;
+      }
+      console.log(values)
+      const queryResult= await this.dataBaseService.
+      runQuery(query,values)
+
+      let users=queryResult[0] as IUser[]
+      let usersInPage=pagination<IUser>(users,page,limit,`${Base_Url}/user/allUsers`)
+      return usersInPage
    }
 
    async changeUserInformation(id:number,input:ChangeInformationDto) {

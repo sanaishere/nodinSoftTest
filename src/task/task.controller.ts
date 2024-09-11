@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards ,Request, Body, UseInterceptors, UploadedFile, HttpException, HttpStatus, Patch, Param, Get, Delete} from '@nestjs/common';
+import { Controller, Post, UseGuards ,Request, Body, UseInterceptors, UploadedFile, HttpException, HttpStatus, Patch, Param, Get, Delete, Query} from '@nestjs/common';
 import { TaskService } from './task.service';
 import { AuthGuard } from 'src/common/guards/authenticate.guard';
 import { CreateTaskDto } from './dto/create.dto';
@@ -7,6 +7,7 @@ import { diskStorage } from 'multer';
 import {  bodyFilter, fileName } from 'src/common/utils';
 import { responseInterceptor } from 'src/common/interceptors/response.interceptor';
 import { UPdateTaskDto } from './dto/update.dto';
+import { QueryDto } from '../common/dto/query.dto';
 //import { taskInterceptor } from 'src/common/interceptors/task.interceptor';
 
 @Controller('task')
@@ -31,8 +32,8 @@ export class TaskController {
 
     @UseGuards(AuthGuard)
     @Get('getMyTasks')
-    async getListOfTasks(@Request() {user}) {
-       return await this.taskService.getListOfTasks(user)
+    async getListOfTasks(@Request() {user}, @Query() query:QueryDto) {
+       return await this.taskService.getListOfTasks(user,query)
     }
 
     @UseGuards(AuthGuard)

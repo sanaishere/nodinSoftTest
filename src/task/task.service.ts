@@ -5,6 +5,8 @@ import { IUser } from 'src/common/interfaces/user.interface';
 import { ITask } from 'src/common/interfaces/task.interface';
 import { UPdateTaskDto } from './dto/update.dto';
 import { Base_Url } from 'src/common/url';
+import { pagination } from 'src/common/pagination';
+import { QueryDto } from '../common/dto/query.dto';
 
 @Injectable()
 export class TaskService {
@@ -23,11 +25,30 @@ export class TaskService {
       return 'task is successfully created'
     }
 
-    async getListOfTasks(user:IUser) {
-      console.log(user)
-      const queryResult= await this.dataBaseService.runQuery('SELECT * FROM task WHERE userId=?',[user.id])
-      const tasks=queryResult[0] 
-      return tasks
+    async getListOfTasks(user:IUser,apiQuery:QueryDto) {
+      let page=apiQuery.page?apiQuery.page:1
+      let limit=apiQuery.limit?apiQuery.limit:5
+      let conditions=[]
+      let values=[]
+      
+      conditions.push(`userId=?`)
+      values.push(user.id)
+      if(apiQuery.text) {
+        conditions.push(`name LIKE ? OR description LIKE ?`)
+        values.push(`${apiQuery.text}%`,`${apiQuery.text}%`)
+      }
+      let query=`SELECT * FROM task WHERE  ${conditions.join(' AND ')}`
+      if(apiQuery.sortBy) {
+        let orderBy=apiQuery.orderBy?apiQuery.orderBy:''
+        query += ` ORDER BY ${apiQuery.sortBy} ${orderBy}`;
+      }
+     console.log(values)
+      const queryResult= await this.dataBaseService.
+      runQuery(query,values)
+
+      let tasks=queryResult[0] as ITask[]
+      let tasksInPage=pagination<ITask>(tasks,page,limit,`${Base_Url}/task/getMyTasks`)
+      return tasksInPage
     } 
 
     async getOneTask(id:number,user:IUser) {
@@ -81,7 +102,7 @@ export class TaskService {
 
     async checkUsersTobeEqual(userId:number,taskUserId:number) {
       if(userId!==taskUserId) {
-        throw new HttpException('you can not see task that is not yours',HttpStatus.FORBIDDEN)
+        throw new HttpException('you can not access task that is not yours',HttpStatus.FORBIDDEN)
       }
     }
 

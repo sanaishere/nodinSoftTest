@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { EditProfileDto } from './dto/editProfile.dto';
 import { AuthGuard } from 'src/common/guards/authenticate.guard';
@@ -9,6 +9,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileName, imageFileFilter } from 'src/common/utils';
 import { responseInterceptor } from 'src/common/interceptors/response.interceptor';
+import { QueryDto } from 'src/common/dto/query.dto';
 @Controller('user')
 @UseInterceptors(new responseInterceptor())
 export class UserController {
@@ -38,8 +39,8 @@ export class UserController {
 
     @UseGuards(AuthGuard,AdminGuard)
     @Get('allUsers')
-    async getAllUsers() {
-        return await this.userService.getAllUsers()
+    async getAllUsers(@Query() query:QueryDto, @Request() {user}) {
+        return await this.userService.getAllUsers(query)
     }
 
     @UseGuards(AuthGuard,AdminGuard)
