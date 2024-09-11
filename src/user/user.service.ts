@@ -34,7 +34,7 @@ export class UserService {
       throw new HttpException(error,error.status)
     }
    }
-
+   
    async getAllUsers(apiQuery:QueryDto) {
     let page=apiQuery.page?apiQuery.page:1
       let limit=apiQuery.limit?apiQuery.limit:5
